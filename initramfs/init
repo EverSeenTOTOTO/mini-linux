@@ -2,18 +2,12 @@
 
 set -euo pipefail
 
-/bin/busybox echo "Boot minimal linux."
-
 for cmd in echo $(/bin/busybox --help | /bin/busybox sed '1,/Current/d' | /bin/busybox sed 's/,//g'); do
   /bin/busybox ln -sf /bin/busybox /bin/$cmd
 done
 
-
 mkdir -p /proc && mount -t proc none /proc
 mkdir -p /sys && mount -t sysfs none /sys
-
-echo "Mount /proc and /sys."
-echo "Entering shell..."
 
 export PS1="$ "
 /bin/busybox sh

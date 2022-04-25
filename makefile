@@ -13,7 +13,7 @@ start: initramfs
 		-m 128\
 		-kernel vmlinuz\
 		-initrd build/initramfs.cpio.gz\
-		-append "console=ttyS0 quiet acpi=off"
+		-append "panic=30 rd.shell rd.debug rd.udev.debug log_buf_len=1M console=tty0 console=ttyS0,9600 rd.retry=60 rd.timeout=120"
 
 .PHONY: clean
 clean:
