@@ -2,21 +2,20 @@
 clean:
 	@rm -rf build
 
-.PHONY: initramfs
-initramfs:
-	@cd initramfs && find . -print0 \
-		| cpio --null -ov --format=newc \
-		| gzip -9 > ../build/initramfs.cpio.gz
-	@echo
+.PHONY: prepare
+prepare:
+	zx install-third-party.js
+	zx mkfs.js
 
 .PHONY: start
-start: initramfs
+start: prepare
 	@qemu-system-riscv64 \
-		-machine virt \
+		-M virt \
 		-bios none \
 		-kernel build/vmlinux \
 		-m 128M \
 		-smp 4 \
 		-nographic \
-		-initrd build/initramfs.cpio.gz \
-		-append "rd.shell rd.debug rd.udev.debug log_buf_len=1M console=tty0 console=ttyS0,9600 rd.retry=60 rd.timeout=120"
+		-drive file=build/rootfs.img,format=raw,id=hd0 \
+		-device virtio-blk-device,drive=hd0 \
+		-append "root=/dev/vda console=tty0 console=ttyS0,9600"

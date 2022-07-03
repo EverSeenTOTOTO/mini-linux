@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-const Cpus = os.cpus().length / 2;
+const Cpus = Math.floor(os.cpus().length / 2);
 const CrossCompiler = '/usr/bin/riscv64-linux-gnu-';
 const BuildDir = path.join(__dirname, 'build');
 
@@ -16,10 +16,10 @@ within(async () => {
 
   const Busybox = 'busybox-1.35.0';
   const BusyboxUrl = `https://busybox.net/downloads/${Busybox}.tar.bz2`
-  const BusyboxTarget = path.join(__dirname, 'initramfs/bin/busybox');
+  const BusyboxTarget = path.join(BuildDir, 'busybox');
 
   if (fs.existsSync(BusyboxTarget)) {
-    await echo(`${chalk.green(BusyboxTarget)} already exist.`);
+    await echo(`${chalk.green(BusyboxTarget)} already exists.`);
   } else {
     await $`rm -rf ${Busybox}`
     await $`wget ${BusyboxUrl}`;
@@ -27,10 +27,11 @@ within(async () => {
 
     cd(Busybox);
 
-    await $`make ARCH=riscv CROSS_COMPILE=${CrossCompiler} defconfig`;
-    await $`make ARCH=riscv CROSS_COMPILE=${CrossCompiler} -j${Cpus}`;
+    await $`make CROSS_COMPILE=${CrossCompiler} defconfig`;
+    // await $`make CROSS_COMPILE=${CrossCompiler} menuconfig`;
+    await $`make CROSS_COMPILE=${CrossCompiler} -j${Cpus}`;
     await $`cp busybox ${BusyboxTarget}`;
-    await echo(`Copied buxybox to ${chalk.green(BusyboxTarget)}`);
+    await echo(`Copied busybox to ${chalk.green(BusyboxTarget)}`);
   }
 }).then(() => {
   // install kernel
@@ -41,7 +42,7 @@ within(async () => {
     const KernelTarget = path.join(BuildDir, 'vmlinux');
 
     if (fs.existsSync(KernelTarget)) {
-      await echo(`${chalk.green(KernelTarget)} already exist.`);
+      await echo(`${chalk.green(KernelTarget)} already exists.`);
     } else {
       await $`rm -rf ${Kernel}`
       await $`wget ${KernelUrl}`;
