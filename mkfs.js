@@ -1,6 +1,6 @@
 #!/usr/bin/env zx
 
-const RemoteImg = 'archriscv-20220727.tar.zst'; // NJU mirror
+const RemoteImg = 'archriscv-2024-09-22.tar.zst'; // NJU mirror
 const InitScript = path.join(__dirname, 'init');
 const BusyboxTarget = path.join(__dirname, 'build/busybox');
 const RootImg = path.join(__dirname, 'build/rootfs.img');

@@ -1,7 +1,7 @@
 #!/usr/bin/env zx
 
 const Cpus = Math.floor(os.cpus().length / 2);
-const CrossCompiler = 'riscv64-unknown-linux-gnu-';
+const CrossCompiler = 'riscv64-linux-gnu-';
 const BuildDir = path.join(__dirname, 'build');
 
 if (!fs.existsSync(BuildDir)) {
@@ -28,8 +28,8 @@ within(async () => {
     cd(Kernel);
 
     await $`make ARCH=riscv CROSS_COMPILE=${CrossCompiler} defconfig`;
-    await $`make ARCH=riscv CROSS_COMPILE=${CrossCompiler} -j${Cpus}`;
-    await $`cp build/${Kernel}/arch/riscv/boot/Image ${KernelTarget}`;
+    await spinner(() => $`make ARCH=riscv CROSS_COMPILE=${CrossCompiler} -j${Cpus}`);
+    await $`cp ${path.resolve(`./arch/riscv/boot/Image`)} ${KernelTarget}`;
     await echo(`Copied vmlinux to ${chalk.green(KernelTarget)}`);
   }
 })
