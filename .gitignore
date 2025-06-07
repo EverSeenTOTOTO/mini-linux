@@ -1,4 +1,5 @@
 vmlinuz
 busybox
 build
+linux
 *.out
