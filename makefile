@@ -10,14 +10,11 @@ prepare:
 
 .PHONY: start
 start: prepare
-	@qemu-system-arm \
-		-M virt \
-		-bios none \
-		-kernel build/vmlinux \
-		-m 128M \
-		-smp 4 \
-		-nographic \
-		-drive file=build/rootfs.img,format=raw,id=hd0 \
-		-device virtio-blk-device,drive=hd0 \
-		-append "root=/dev/vda console=tty0 console=ttyS0,9600"
+	@qemu-system-aarch64 -M virt \
+		-cpu cortex-a76 -smp 4 -m 2G \
+		-kernel build/kernel.img \
+		-initrd build/initramfs.cpio.gz \
+		-append "loglevel=8 console=ttyAMA0,115200 dwc_otg.lpm_enable=0" \
+		-no-reboot \
+		-nographic
 
