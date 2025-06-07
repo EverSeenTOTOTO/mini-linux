@@ -13,6 +13,6 @@ start: prepare
 		-M virt \
 		-kernel build/vmlinux \
 		-nographic \
-		-drive file=build/rootfs.img,format=raw,id=hd0 \
+		-drive file=build/rootfs.img,format=raw,id=hd0,if=none \
 		-device virtio-blk-device,drive=hd0 \
 		-append "root=/dev/vda rw console=ttyS0,9600"
