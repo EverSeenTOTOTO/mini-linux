@@ -4,12 +4,13 @@ clean:
 
 .PHONY: prepare
 prepare:
-	zx install-third-party.js
+	zx build-kernel.js
+	zx build-busybox.js
 	zx mkfs.js
 
 .PHONY: start
 start: prepare
-	@qemu-system-riscv64 \
+	@qemu-system-arm \
 		-M virt \
 		-bios none \
 		-kernel build/vmlinux \
@@ -19,3 +20,4 @@ start: prepare
 		-drive file=build/rootfs.img,format=raw,id=hd0 \
 		-device virtio-blk-device,drive=hd0 \
 		-append "root=/dev/vda console=tty0 console=ttyS0,9600"
+

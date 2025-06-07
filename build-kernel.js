@@ -8,10 +8,14 @@ if (!fs.existsSync("linux")) {
 
 cd('linux');
 
-process.env.KERNEL = 'kernel';
+if (!fs.existsSync("vmlinux")) {
+  process.env.KERNEL = 'kernel';
 
-await $`make bcm2711_defconfig`;
+  await $`make bcm2711_defconfig`;
 
-process.env.CONFIG_LOCALVERSION = "-v7l-MYPI"
+  process.env.CONFIG_LOCALVERSION = "-v7l-MYPI"
 
-await $`make -j6 Image.gz modules dtbs`
+  await $`make -j6 Image.gz modules dtbs`
+} else {
+  await echo(`${chalk.green(path.resolve("./vmlinux"))} already exists.`)
+}

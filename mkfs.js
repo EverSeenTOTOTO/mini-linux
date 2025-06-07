@@ -1,5 +1,7 @@
 #!/usr/bin/env zx
 
+$.verbose = true;
+
 const InitScript = path.join(__dirname, 'init');
 const BusyboxTarget = path.join(__dirname, 'build/busybox');
 const RootImg = path.join(__dirname, 'build/rootfs.img');
@@ -10,30 +12,28 @@ if (!fs.existsSync(MountDir)) {
   echo(`Created dir ${chalk.green(MountDir)}`);
 }
 
-within(async () => {
-  if (!fs.existsSync(RootImg)) {
-    await $`dd if=/dev/zero of=${RootImg} bs=1M count=128`;
-    await $`mkfs.ext4 -F ${RootImg}`;
-    await echo(`Created root fs ${chalk.green(RootImg)}`);
+if (!fs.existsSync(RootImg)) {
+  await $`dd if=/dev/zero of=${RootImg} bs=1M count=128`;
+  await $`mkfs.ext4 -F ${RootImg}`;
+  await echo(`Created root fs ${chalk.green(RootImg)}`);
 
-    await $`sudo mount -o loop ${RootImg} ${MountDir}`;
+  await $`sudo mount -o loop ${RootImg} ${MountDir}`;
 
-    cd(MountDir);
+  cd(MountDir);
 
-    await $`sudo mkdir -p bin etc dev lib proc sbin tmp usr usr/bin usr/lib usr/sbin`;
-    await $`sudo cp ${BusyboxTarget} bin`;
-    await $`sudo ln -s ../bin/busybox sbin/init`;
-    await $`sudo ln -s ../bin/busybox bin/sh`;
+  await $`sudo mkdir -p bin etc dev lib proc sbin tmp usr usr/bin usr/lib usr/sbin`;
+  await $`sudo cp ${BusyboxTarget} bin`;
+  await $`sudo ln -s ../bin/busybox sbin/init`;
+  await $`sudo ln -s ../bin/busybox bin/sh`;
 
-    // init 
-    await $`sudo mkdir etc/init.d`;
-    await $`sudo cp ${InitScript} etc/init.d/rcS`;
-    await $`sudo chmod +x etc/init.d/rcS`;
+  // init 
+  await $`sudo mkdir etc/init.d`;
+  await $`sudo cp ${InitScript} etc/init.d/rcS`;
+  await $`sudo chmod +x etc/init.d/rcS`;
 
-    cd("..");
+  cd("..");
 
-    await $`sudo umount ${MountDir}`;
-  } else {
-    await echo(`${chalk.green(RootImg)} already exists.`);
-  }
-})
+  await $`sudo umount ${MountDir}`;
+} else {
+  await echo(`${chalk.green(RootImg)} already exists.`);
+}
